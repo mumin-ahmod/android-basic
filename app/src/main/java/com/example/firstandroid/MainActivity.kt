@@ -12,12 +12,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.firstandroid.ui.theme.FirstAndroidTheme
+import java.text.NumberFormat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +55,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
 
-                    DiceRollerApp()
+                    MyApp()
                 }
             }
         }
@@ -56,43 +64,56 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun DiceWithButtonAndImage(modifier: Modifier = Modifier) {
+fun TipTextAndFiled(modifier: Modifier = Modifier) {
+    var billAmount by remember { mutableStateOf("") }
 
-    var result by remember { mutableIntStateOf(1) }
-
-    val imageRes = when (result) {
-        1 -> R.drawable.dice_1
-        2 -> R.drawable.dice_2
-        3 -> R.drawable.dice_3
-        4 -> R.drawable.dice_4
-        5 -> R.drawable.dice_5
-        else -> R.drawable.dice_6
-    }
-
-    Column(
-        modifier = Modifier,
+    val amount = billAmount.toDoubleOrNull() ?:0.0
+    val tip = calculateTip(amount)
+    Column (
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .statusBarsPadding()
+            .padding(horizontal = 30.dp)
+            .verticalScroll(
+                rememberScrollState()
+            )
+            .safeDrawingPadding()
     ) {
-        Image(
-            painter = painterResource(imageRes),
-            contentDescription = result.toString()
+        Text(
+            text = stringResource(R.string.calculate_tip),
+            fontSize = 18.sp
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { result = (1..6).random(); }) {
-            Text(stringResource(R.string.roll))
-        }
+        TextField(
+            value = billAmount,
+            label = { Text(text = "input amount") },
+            onValueChange = {billAmount = it},
+            modifier = modifier.padding(all = 8.dp)
+        )
+
+        Spacer(modifier = modifier.height(50.dp))
+
+        Text(
+            text = stringResource(R.string.tip_amount, tip),
+            style = MaterialTheme.typography.displaySmall
+
+        )
 
     }
 }
 
+private fun calculateTip(amount : Double, tipPercent: Double = 15.00) : String {
+    val tip = tipPercent / 100*amount
+
+    return NumberFormat.getCurrencyInstance().format(tip)
+}
 
 @Preview(showBackground = true)
 @Composable
-fun DiceRollerApp() {
+fun MyApp() {
     FirstAndroidTheme {
 
-        DiceWithButtonAndImage()
+        TipTextAndFiled()
     }
 }
