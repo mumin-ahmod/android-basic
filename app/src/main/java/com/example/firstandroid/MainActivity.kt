@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -103,6 +105,7 @@ fun TipTextAndFiled(modifier: Modifier = Modifier) {
         TextFiledWithIcon(
             amount = billAmount,
             label = stringResource(R.string.bill_amount),
+            leadingIcon = R.drawable.money,
             onValueChanged = { billAmount = it },
             modifier = modifier
         )
@@ -111,6 +114,7 @@ fun TipTextAndFiled(modifier: Modifier = Modifier) {
         TextFiledWithIcon(
             amount = percent,
             label = stringResource(R.string.tip_percent),
+            leadingIcon = R.drawable.percent,
             onValueChanged = { percent = it },
             modifier = modifier
         )
@@ -136,12 +140,14 @@ fun TipTextAndFiled(modifier: Modifier = Modifier) {
 private fun TextFiledWithIcon(
     amount: String,
     label: String,
+    @DrawableRes leadingIcon: Int,
     onValueChanged: (String) -> Unit,
     modifier: Modifier
 ) {
 
     TextField(
         value = amount,
+        leadingIcon = { Icon(painter = painterResource(id=leadingIcon), contentDescription = null) },
         label = { Text(text = label) },
         onValueChange = onValueChanged,
         keyboardOptions = KeyboardOptions.Default.copy(
