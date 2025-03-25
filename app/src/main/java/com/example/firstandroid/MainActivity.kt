@@ -67,9 +67,12 @@ class MainActivity : ComponentActivity() {
 fun TipTextAndFiled(modifier: Modifier = Modifier) {
     var billAmount by remember { mutableStateOf("") }
 
-    val amount = billAmount.toDoubleOrNull() ?:0.0
-    val tip = calculateTip(amount)
-    Column (
+    var percent by remember { mutableStateOf("") }
+
+    val amount = billAmount.toDoubleOrNull() ?: 0.0
+    val percentage = percent.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount, percentage)
+    Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -85,11 +88,20 @@ fun TipTextAndFiled(modifier: Modifier = Modifier) {
             fontSize = 18.sp
         )
 
-        TextField(
-            value = billAmount,
-            label = { Text(text = "input amount") },
-            onValueChange = {billAmount = it},
-            modifier = modifier.padding(all = 8.dp)
+        //bill amount filed
+        TextFiledWithIcon(
+            amount= billAmount,
+            label = stringResource(R.string.bill_amount),
+            onValueChanged = { billAmount = it },
+            modifier = modifier
+        )
+
+        //percentage filed
+        TextFiledWithIcon(
+            amount= percent,
+            label = stringResource(R.string.tip_percent),
+            onValueChanged = { percent = it },
+            modifier = modifier
         )
 
         Spacer(modifier = modifier.height(50.dp))
@@ -103,8 +115,24 @@ fun TipTextAndFiled(modifier: Modifier = Modifier) {
     }
 }
 
-private fun calculateTip(amount : Double, tipPercent: Double = 15.00) : String {
-    val tip = tipPercent / 100*amount
+@Composable
+private fun TextFiledWithIcon(
+    amount: String,
+    label: String,
+    onValueChanged: (String) -> Unit,
+    modifier: Modifier
+) {
+
+    TextField(
+        value = amount,
+        label = { Text(text = label) },
+        onValueChange = onValueChanged,
+        modifier = modifier.padding(all = 8.dp)
+    )
+}
+
+private fun calculateTip(amount: Double, tipPercent: Double ): String {
+    val tip = tipPercent / 100 * amount
 
     return NumberFormat.getCurrencyInstance().format(tip)
 }
